@@ -1,0 +1,66 @@
+<!-- templates/visitor_status.html -->
+{% extends "base.html" %}
+{% block title %}Request Status{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> Your Visit Requests</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Phone: {{ phone }}</p>
+                {% if requests %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Student</th>
+                                    <th>Request Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in requests %}
+                                <tr>
+                                    <td>#{{ req.id }}</td>
+                                    <td>{{ req.student }}</td>
+                                    <td>{{ req.request_date[:19] }}</td>
+                                    <td>
+                                        {% if req.status == 'Approved' %}
+                                            <span class="badge bg-success">Approved</span>
+                                        {% elif req.status == 'Rejected' %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if req.status == 'Approved' %}
+                                            <a href="{{ url_for('visitor_pass', request_id=req.id) }}" 
+                                               class="btn btn-sm btn-success">
+                                                <i class="bi bi-qr-code"></i> View Pass
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        No requests found for this phone number.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Secure Hostel Visitor Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        
+        <!-- Hero Section -->
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <!-- Main icon -->
+                <i class="bi bi-shield-lock-fill text-primary" style="font-size: 4rem;"></i>
+                
+                <!-- Title -->
+                <h1 class="mt-3 mb-3">Secure Hostel Visitor Management System</h1>
+                
+                <!-- Subtitle -->
+                <p class="lead text-muted">
+                    Enterprise-grade security with Multi-Factor Authentication, Encryption, and Digital Signatures
+                </p>
+                
+                <!-- QUICK ACCESS BUTTON FOR RETURNING VISITORS -->
+                {% if session.get('last_visitor_phone') %}
+                <div class="mt-4 mb-2">
+                    <a class="btn btn-info btn-lg" href="{{ url_for('visitor_status', phone=session['last_visitor_phone']) }}">
+                        <i class="bi bi-clock-history"></i> View My Last Visitor Request Status
+                    </a>
+                    <p class="small text-muted mt-2">
+                        <i class="bi bi-info-circle"></i> 
+                        Quick access for phone: {{ session['last_visitor_phone'] }}
+                    </p>
+                </div>
+                {% endif %}
+                
+                <!-- Security Features Icons -->
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <i class="bi bi-key-fill text-primary" style="font-size: 2rem;"></i>
+                            <h6 class="mt-2">MFA Authentication</h6>
+                            <small class="text-muted">OTP-based verification</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <i class="bi bi-lock-fill text-success" style="font-size: 2rem;"></i>
+                            <h6 class="mt-2">AES-256 Encryption</h6>
+                            <small class="text-muted">Data encryption</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <i class="bi bi-pen-fill text-info" style="font-size: 2rem;"></i>
+                            <h6 class="mt-2">Digital Signatures</h6>
+                            <small class="text-muted">RSA-2048 signing</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <i class="bi bi-shield-check text-warning" style="font-size: 2rem;"></i>
+                            <h6 class="mt-2">Access Control</h6>
+                            <small class="text-muted">Role-based ACL</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Type Selection Cards -->
+        <div class="row g-4">
+            
+            <!-- VISITOR CARD -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <!-- Icon -->
+                        <i class="bi bi-person-badge text-primary" style="font-size: 3rem;"></i>
+                        
+                        <!-- Title -->
+                        <h4 class="mt-3">Visitor</h4>
+                        
+                        <!-- Description -->
+                        <p class="text-muted">Request hostel visit with OTP verification</p>
+                        
+                        <hr>
+                        
+                        <!-- Features -->
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Multi-Factor Authentication
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Encrypted data submission
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Base64 encoded QR pass
+                            </li>
+                        </ul>
+                        
+                        <!-- Button -->
+                        <a href="{{ url_for('visitor_register') }}" class="btn btn-primary w-100">
+                            <i class="bi bi-qr-code"></i> Register New Visit
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT CARD -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <!-- Icon -->
+                        <i class="bi bi-mortarboard text-success" style="font-size: 3rem;"></i>
+                        
+                        <!-- Title -->
+                        <h4 class="mt-3">Student</h4>
+                        
+                        <!-- Description -->
+                        <p class="text-muted">Approve or reject visitor requests</p>
+                        
+                        <hr>
+                        
+                        <!-- Features -->
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Password authentication
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Approve/reject requests
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Generate digital signatures
+                            </li>
+                        </ul>
+                        
+                        <!-- Button -->
+                        <a href="{{ url_for('student_login') }}" class="btn btn-success w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Student Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WARDEN CARD -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <!-- Icon -->
+                        <i class="bi bi-person-gear text-danger" style="font-size: 3rem;"></i>
+                        
+                        <!-- Title -->
+                        <h4 class="mt-3">Warden</h4>
+                        
+                        <!-- Description -->
+                        <p class="text-muted">Monitor and manage all visitor requests</p>
+                        
+                        <hr>
+                        
+                        <!-- Features -->
+                        <ul class="list-unstyled text-start mb-4">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Full access control
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                View decrypted logs
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                                Verify digital signatures
+                            </li>
+                        </ul>
+                        
+                        <!-- Button -->
+                        <a href="{{ url_for('warden_login') }}" class="btn btn-danger w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Warden Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Components Info -->
+        <div class="card mt-4">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Implemented Security Components</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-1-circle-fill text-primary"></i> Authentication</h6>
+                        <ul class="small">
+                            <li>Single-Factor: Username + Salted SHA-256 Password</li>
+                            <li>Multi-Factor: OTP with 2-minute expiry</li>
+                            <li>Login attempt tracking & lockout (5 attempts, 30s lock)</li>
+                        </ul>
+                        
+                        <h6><i class="bi bi-2-circle-fill text-success"></i> Authorization (Access Control)</h6>
+                        <ul class="small">
+                            <li>Access Control Matrix (3 Subjects × 3 Objects)</li>
+                            <li>Role-based permissions enforcement</li>
+                            <li>Programmatic access validation</li>
+                        </ul>
+                        
+                        <h6><i class="bi bi-3-circle-fill text-info"></i> Encryption</h6>
+                        <ul class="small">
+                            <li>Hybrid Model: RSA-2048 + AES-256-CBC</li>
+                            <li>Encrypted visitor data (name, phone, purpose)</li>
+                            <li>Secure key generation & management</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="bi bi-4-circle-fill text-warning"></i> Hashing & Digital Signature</h6>
+                        <ul class="small">
+                            <li>SHA-256 with salt for password storage</li>
+                            <li>RSA-based digital signatures on approvals</li>
+                            <li>Signature verification for data integrity</li>
+                        </ul>
+                        
+                        <h6><i class="bi bi-5-circle-fill text-danger"></i> Encoding</h6>
+                        <ul class="small">
+                            <li>Base64 encoding for QR tokens</li>
+                            <li>Encoded encrypted pass tokens</li>
+                            <li>Token validation at entry gate</li>
+                        </ul>
+                        
+                        <h6><i class="bi bi-6-circle-fill text-secondary"></i> Additional Security</h6>
+                        <ul class="small">
+                            <li>Session management & timeout</li>
+                            <li>Input validation & sanitization</li>
+                            <li>Comprehensive audit logging</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

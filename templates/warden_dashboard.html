@@ -1,0 +1,218 @@
+
+{% extends "base.html" %}
+
+{% block title %}Warden Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <!-- Card Header -->
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-gear"></i> 
+                    Warden Dashboard - {{ session.get('username') }}
+                </h5>
+            </div>
+            
+            <!-- Card Body -->
+            <div class="card-body">
+                
+                <!-- Admin Access Info -->
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Full Access Control:</strong> 
+                    You can view all requests, override ANY approval/rejection (even already processed ones), 
+                    view decrypted data, and verify digital signatures.
+                </div>
+
+                <!-- View Logs Button -->
+                <div class="mb-3">
+                    <a href="{{ url_for('warden_logs') }}" class="btn btn-primary">
+                        <i class="bi bi-list-ul"></i> View Access Logs
+                    </a>
+                </div>
+
+                <h5 class="mb-3">
+                    <i class="bi bi-clipboard-data"></i> 
+                    All Visitor Requests
+                </h5>
+                
+                {% if requests %}
+                    <!-- All Requests Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Visitor</th>
+                                    <th>Phone</th>
+                                    <th>Purpose</th>
+                                    <th>Student</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Signature</th>
+                                    <th>Warden Override</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in requests %}
+                                <tr>
+                                    <!-- Request ID -->
+                                    <td><strong>#{{ req.id }}</strong></td>
+                                    
+                                    <!-- Visitor Name (Decrypted) -->
+                                    <td>
+                                        <i class="bi bi-person-fill text-primary"></i>
+                                        {{ req.name }}
+                                    </td>
+                                    
+                                    <!-- Phone (Decrypted) -->
+                                    <td>{{ req.phone }}</td>
+                                    
+                                    <!-- Purpose (Truncated, Decrypted) -->
+                                    <td>{{ req.purpose[:30] }}...</td>
+                                    
+                                    <!-- Student Username -->
+                                    <td>
+                                        <i class="bi bi-mortarboard"></i>
+                                        {{ req.student }}
+                                    </td>
+                                    
+                                    <!-- Request Date (Short Format) -->
+                                    <td>
+                                        <small>{{ req.request_date[:10] }}</small>
+                                    </td>
+                                    
+                                    <!-- Status Badge -->
+                                    <td>
+                                        {% if req.status == 'Approved' %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Approved
+                                            </span>
+                                        {% elif req.status == 'Rejected' %}
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle"></i> Rejected
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="bi bi-clock"></i> Pending
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- Digital Signature Validity -->
+                                    <td>
+                                        {% if req.signature_valid %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Valid
+                                            </span>
+                                        {% elif req.status == 'Approved' %}
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle"></i> Invalid
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- WARDEN OVERRIDE ACTIONS - NOW AVAILABLE FOR ALL REQUESTS! -->
+                                    <td>
+                                        <!-- Override Approve (Always Available) -->
+                                        <form method="POST" 
+                                              action="{{ url_for('warden_override', request_id=req.id) }}" 
+                                              class="d-inline">
+                                            <button type="submit" 
+                                                    name="action" 
+                                                    value="approve" 
+                                                    class="btn btn-sm btn-success" 
+                                                    onclick="return confirm('Override and approve? This will replace any existing decision.');"
+                                                    title="Approve (or Re-approve) with warden signature">
+                                                <i class="bi bi-check-circle-fill"></i> 
+                                                {% if req.status == 'Approved' %}Re-Approve{% else %}Approve{% endif %}
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- Override Reject (Always Available) -->
+                                        <form method="POST" 
+                                              action="{{ url_for('warden_override', request_id=req.id) }}" 
+                                              class="d-inline">
+                                            <button type="submit" 
+                                                    name="action" 
+                                                    value="reject" 
+                                                    class="btn btn-sm btn-danger"
+                                                    onclick="return confirm('Override and reject? This will remove any existing approval.');"
+                                                    title="Reject (or Re-reject) request">
+                                                <i class="bi bi-x-circle-fill"></i> 
+                                                {% if req.status == 'Rejected' %}Keep Rejected{% else %}Reject{% endif %}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Table Legend -->
+                    <div class="alert alert-warning mt-3">
+                        <h6 class="mb-2">
+                            <i class="bi bi-shield-exclamation"></i> 
+                            <strong>Warden Override Power</strong>
+                        </h6>
+                        <small>
+                            <ul class="mb-0">
+                                <li><strong>Approve:</strong> Sets request to "Approved" and generates new warden signature</li>
+                                <li><strong>Reject:</strong> Sets request to "Rejected" and removes any existing approval</li>
+                                <li><strong>Override Anytime:</strong> You can override even if student already approved/rejected</li>
+                                <li><strong>Signature Status:</strong> 
+                                    <span class="badge bg-success ms-1">Valid</span> Signature verified |
+                                    <span class="badge bg-danger ms-1">Invalid</span> Failed verification |
+                                    <span class="text-muted ms-1">N/A</span> Not yet signed
+                                </li>
+                            </ul>
+                        </small>
+                    </div>
+                    
+                {% else %}
+                    <!-- No Requests -->
+                    <div class="alert alert-info">
+                        <i class="bi bi-inbox"></i>
+                        No visitor requests in the system yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Security Privileges Active -->
+        <div class="card mt-3">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0">
+                    <i class="bi bi-shield-check"></i> 
+                    Warden Security Privileges
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row small">
+                    <div class="col-md-3">
+                        <i class="bi bi-eye-fill text-primary"></i>
+                        <strong>View All:</strong> Full access to all requests
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-unlock-fill text-success"></i>
+                        <strong>Decrypt:</strong> View encrypted data
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-patch-check-fill text-info"></i>
+                        <strong>Verify:</strong> Check digital signatures
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-gear-fill text-warning"></i>
+                        <strong>Override:</strong> Can override ANY decision
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!-- templates/student_login.html -->
+{% extends "base.html" %}
+{% block title %}Student Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-mortarboard"></i> Student Login</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-shield-lock"></i>
+                    <strong>Single-Factor Authentication:</strong> Password protected with SHA-256 salted hashing
+                </div>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" class="form-control" required 
+                               placeholder="student1, student2, student3">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required 
+                               placeholder="Password">
+                    </div>
+                    <div class="alert alert-warning">
+                        <small>
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Security:</strong> Account locked for 30 seconds after 5 failed attempts
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Demo: student1 / Student@123
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

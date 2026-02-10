@@ -1,0 +1,117 @@
+<!-- templates/student_dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-mortarboard"></i> Student Dashboard - {{ session.get('username') }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Access Control:</strong> You can approve/reject visitor requests assigned to you.
+                    Approvals will be digitally signed with RSA-2048.
+                </div>
+
+                <h5 class="mb-3">Visitor Requests</h5>
+                
+                {% if requests %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Visitor Name <span class="security-badge encrypted">Encrypted</span></th>
+                                    <th>Phone <span class="security-badge encrypted">Encrypted</span></th>
+                                    <th>Purpose <span class="security-badge encrypted">Encrypted</span></th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for req in requests %}
+                                <tr>
+                                    <td>#{{ req.id }}</td>
+                                    <td>{{ req.name }}</td>
+                                    <td>{{ req.phone }}</td>
+                                    <td>{{ req.purpose }}</td>
+                                    <td>{{ req.request_date[:19] }}</td>
+                                    <td>
+                                        {% if req.status == 'Approved' %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Approved
+                                            </span>
+                                        {% elif req.status == 'Rejected' %}
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-circle"></i> Rejected
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="bi bi-clock"></i> Pending
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if req.status == 'Pending' %}
+                                            <form method="POST" action="{{ url_for('student_approve', request_id=req.id) }}" 
+                                                  class="d-inline" onsubmit="return confirm('Approve this request and generate digital signature?');">
+                                                <button type="submit" name="action" value="approve" 
+                                                        class="btn btn-sm btn-success">
+                                                    <i class="bi bi-check-circle"></i> Approve & Sign
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ url_for('student_approve', request_id=req.id) }}" 
+                                                  class="d-inline" onsubmit="return confirm('Reject this request?');">
+                                                <button type="submit" name="action" value="reject" 
+                                                        class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-x-circle"></i> Reject
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted">Processed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="bi bi-inbox"></i>
+                        No visitor requests assigned to you.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Security Info -->
+        <div class="card mt-3">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0"><i class="bi bi-shield-check"></i> Security Features Active</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <i class="bi bi-lock-fill text-success"></i>
+                        <strong>Data Decryption:</strong> AES-256-CBC
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-pen-fill text-info"></i>
+                        <strong>Digital Signing:</strong> RSA-2048
+                    </div>
+                    <div class="col-md-4">
+                        <i class="bi bi-shield-check text-warning"></i>
+                        <strong>Access Control:</strong> Student Role
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

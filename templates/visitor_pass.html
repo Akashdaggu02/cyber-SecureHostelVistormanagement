@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Visitor Pass - Approved{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-success shadow-lg">
+            <!-- Card Header (Success - Approved) -->
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0">
+                    <i class="bi bi-check-circle-fill"></i> 
+                    VISITOR PASS - APPROVED
+                </h4>
+            </div>
+            
+            <!-- Card Body -->
+            <div class="card-body">
+                
+                <!-- Security Badges -->
+                <div class="text-center mb-4">
+                    <span class="security-badge encrypted me-2">
+                        <i class="bi bi-lock-fill"></i> AES-256 Encrypted
+                    </span>
+                    <span class="security-badge signed me-2">
+                        <i class="bi bi-pen-fill"></i> Digitally Signed
+                    </span>
+                    <span class="security-badge verified">
+                        <i class="bi bi-shield-check"></i> Signature Verified
+                    </span>
+                </div>
+
+                <!-- Visitor Details (Decrypted) -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Visitor Name</h6>
+                        <p class="lead">
+                            <i class="bi bi-person-fill text-primary"></i>
+                            {{ name }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Phone</h6>
+                        <p class="lead">
+                            <i class="bi bi-phone-fill text-primary"></i>
+                            {{ phone }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Purpose of Visit -->
+                <div class="mb-4">
+                    <h6 class="text-muted">Purpose of Visit</h6>
+                    <p>{{ purpose }}</p>
+                </div>
+
+                <!-- Meeting Details -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Meeting Student</h6>
+                        <p>
+                            <i class="bi bi-mortarboard-fill text-success"></i>
+                            {{ student }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Approved On</h6>
+                        <p>
+                            <i class="bi bi-calendar-check-fill text-success"></i>
+                            {{ approved_date[:19] }}
+                        </p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <!-- QR CODE SECTION - NEW SIMPLE VERSION -->
+                {% if qr_image %}
+                <div class="text-center mt-3 mb-4">
+                    <h6 class="mb-3">
+                        <i class="bi bi-qr-code"></i> 
+                        QR Code Pass
+                    </h6>
+                    <img src="{{ qr_image }}" 
+                         alt="QR Pass" 
+                         style="width: 200px; height: 200px; border: 3px solid #28a745; border-radius: 10px;"
+                         class="img-fluid">
+                    <p class="small text-success mt-2 mb-0">
+                        <i class="bi bi-check-circle"></i> 
+                        <strong>Scan this QR code at the gate for entry</strong>
+                    </p>
+                </div>
+                <hr>
+                {% endif %}
+                
+                <!-- Base64 Token Section -->
+                <div class="border rounded p-4 bg-light text-center mb-3">
+                    <h6 class="mb-3">
+                        <i class="bi bi-code-square"></i> 
+                        Base64 Encoded Token
+                    </h6>
+                    
+                    <!-- Token Display (scrollable) -->
+                    <div class="alert alert-secondary mb-0" 
+                         style="word-wrap: break-word; 
+                                font-family: monospace; 
+                                font-size: 0.65rem; 
+                                max-height: 150px; 
+                                overflow-y: auto;
+                                text-align: left;">
+                        {{ qr_token }}
+                    </div>
+                    
+                    <p class="small text-muted mt-2 mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        This token contains encrypted visitor data with digital signature
+                    </p>
+                </div>
+                
+                <!-- Security Information -->
+                <div class="alert alert-info">
+                    <h6 class="mb-2">
+                        <i class="bi bi-shield-fill"></i> 
+                        Security Information
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Token is encrypted with <strong>AES-256</strong></li>
+                        <li>Digital signature verifies authenticity with <strong>RSA-2048</strong></li>
+                        <li>Base64 encoding ensures safe transmission</li>
+                        <li>Signature has been verified ✓</li>
+                    </ul>
+                </div>
+                
+                <!-- Entry Instructions -->
+                <div class="alert alert-success">
+                    <h6 class="mb-2">
+                        <i class="bi bi-door-open-fill"></i> 
+                        Entry Instructions
+                    </h6>
+                    <ol class="mb-0 small">
+                        <li>Show this pass {% if qr_image %}(or QR code){% endif %} at the gate</li>
+                        <li>Security will {% if qr_image %}scan the QR code or {% endif %}verify the token</li>
+                        <li>System will verify the digital signature</li>
+                        <li>If valid, you'll be granted entry</li>
+                    </ol>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="text-center mt-4">
+                    <button onclick="window.print()" class="btn btn-primary me-2">
+                        <i class="bi bi-printer"></i> Print Pass
+                    </button>
+                    <a href="{{ url_for('visitor_status', phone=phone) }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Status
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Styling (hide unnecessary elements when printing) -->
+<style>
+@media print {
+    .navbar, footer, .btn, .alert-info, .alert-success { 
+        display: none; 
+    }
+    .card { 
+        box-shadow: none; 
+        border: 2px solid #28a745;
+    }
+    body {
+        background: white;
+    }
+}
+</style>
+{% endblock %}

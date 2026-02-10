@@ -1,0 +1,37 @@
+<!-- templates/visitor_verify_otp.html -->
+{% extends "base.html" %}
+{% block title %}Verify OTP{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-key"></i> Verify OTP</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-clock"></i>
+                    <strong>OTP sent to {{ phone }}</strong><br>
+                    Check console output. OTP expires in 2 minutes.
+                </div>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Enter OTP</label>
+                        <input type="text" name="otp" class="form-control" 
+                               pattern="[0-9]{6}" maxlength="6" required 
+                               placeholder="6-digit OTP">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i> Verify OTP
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('visitor_register') }}" class="btn btn-link">
+                        <i class="bi bi-arrow-left"></i> Resend OTP
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
